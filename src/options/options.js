@@ -10,8 +10,10 @@ function splitList(value) {
     .filter(Boolean);
 }
 
+let pairedToken = ""; // bagw per-client token, set on load / after pairing
+
 function setProviderVisibility(provider) {
-  $("claudecode-section").classList.toggle("active", provider === "claudecode");
+  $("bagw-section").classList.toggle("active", provider === "bagw");
   $("anthropic-section").classList.toggle("active", provider === "anthropic");
   $("bedrock-section").classList.toggle("active", provider === "bedrock");
 }
@@ -30,9 +32,14 @@ async function load() {
   });
   setProviderVisibility(s.provider);
 
-  $("ccBridgeUrl").value = s.claudeCode.bridgeUrl || "http://127.0.0.1:8765";
-  $("ccToken").value = s.claudeCode.token || "";
-  $("ccModel").value = s.claudeCode.model || "";
+  $("bagwUrl").value = s.bagw.url || "http://127.0.0.1:8765";
+  $("bagwAgent").value = s.bagw.agent || "claude";
+  $("bagwModel").value = s.bagw.model || "";
+  pairedToken = s.bagw.token || "";
+  if (pairedToken) {
+    $("bagwStatus").className = "test-status ok";
+    $("bagwStatus").textContent = "Connected ✓";
+  }
 
   $("anthropicApiKey").value = s.anthropicApiKey || "";
   $("anthropicModel").value = s.anthropicModel || "claude-sonnet-4-6";
@@ -73,10 +80,11 @@ async function load() {
 function collect() {
   return {
     provider: selectedProvider(),
-    claudeCode: {
-      bridgeUrl: $("ccBridgeUrl").value.trim() || "http://127.0.0.1:8765",
-      token: $("ccToken").value.trim(),
-      model: $("ccModel").value.trim(),
+    bagw: {
+      url: $("bagwUrl").value.trim() || "http://127.0.0.1:8765",
+      token: pairedToken, // managed by the Connect (pairing) flow, not typed
+      agent: $("bagwAgent").value.trim() || "claude",
+      model: $("bagwModel").value.trim(),
     },
     anthropicApiKey: $("anthropicApiKey").value.trim(),
     anthropicModel: $("anthropicModel").value,
@@ -146,6 +154,74 @@ async function testConnection() {
   }
 }
 
+// Pair this extension with bagw: request access, wait for the user to approve
+// it (native dialog or `bagw approve <code>`), then store the issued token.
+async function bagwConnect() {
+  const base = ($("bagwUrl").value.trim() || "http://127.0.0.1:8765").replace(/\/+$/, "");
+  const agent = $("bagwAgent").value.trim() || "claude";
+  const st = $("bagwStatus");
+  st.className = "test-status";
+  st.innerHTML = `<span class="spinner"></span>Requesting access…`;
+
+  let pair;
+  try {
+    const r = await fetch(`${base}/pair`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name: "Watch Your Tone", agent }),
+    });
+    pair = await r.json();
+  } catch {
+    st.className = "test-status err";
+    st.textContent = `Couldn't reach bagw at ${base}. Is it running? (brew services start bagw)`;
+    return;
+  }
+  if (!pair.pairingId) {
+    st.className = "test-status err";
+    st.textContent = pair.error || "Pairing request failed.";
+    return;
+  }
+
+  const hint =
+    pair.approval === "cli"
+      ? ` — on the bagw machine run: bagw approve ${pair.code}`
+      : " — approve the dialog on the bagw machine";
+  st.className = "test-status";
+  st.innerHTML = `Waiting for approval (code <b>${pair.code}</b>)${hint}…`;
+
+  const deadline = Date.now() + 120000;
+  while (Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 1500));
+    let p;
+    try {
+      p = await (await fetch(`${base}/pair/${pair.pairingId}`)).json();
+    } catch {
+      continue;
+    }
+    if (p.status === "approved" && p.token) {
+      pairedToken = p.token;
+      // Persist immediately and select bagw as the provider.
+      document.querySelector('input[name="provider"][value="bagw"]').checked = true;
+      setProviderVisibility("bagw");
+      await saveSettings({
+        provider: "bagw",
+        bagw: { url: base, token: p.token, agent, model: $("bagwModel").value.trim() },
+      });
+      st.className = "test-status ok";
+      st.textContent = "Connected ✓ — bagw approved this extension.";
+      return;
+    }
+    if (p.status === "denied") {
+      st.className = "test-status err";
+      st.textContent = "Request was denied.";
+      return;
+    }
+  }
+  st.className = "test-status err";
+  st.textContent = "Timed out waiting for approval. Click Connect to try again.";
+}
+
 $("save").addEventListener("click", save);
 $("test").addEventListener("click", testConnection);
+$("bagwConnect").addEventListener("click", bagwConnect);
 load();

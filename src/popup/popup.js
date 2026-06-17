@@ -32,8 +32,8 @@ async function init() {
     const provider =
       settings.provider === "bedrock"
         ? "AWS Bedrock"
-        : settings.provider === "claudecode"
-        ? "Claude Code (local)"
+        : settings.provider === "bagw"
+        ? "Local agent gateway (bagw)"
         : "Anthropic API";
     status.className = "status ok";
     status.textContent = `Ready · using ${provider}`;

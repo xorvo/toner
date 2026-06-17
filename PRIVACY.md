@@ -27,10 +27,12 @@ Watch Your Tone is built so that privacy is a feature, not an afterthought.
 ## Who receives your data
 
 - Your text is sent directly from your browser to the AI provider you chose:
-  - **Claude Code (local)**: to a local bridge on `127.0.0.1` that runs your own
-    `claude` CLI, which then calls whatever backend your Claude Code is configured
-    to use (e.g. your AWS Bedrock account). The text stays between your machine and
-    your configured backend; the bridge stores nothing.
+  - **bagw (local agent gateway)**: to the local [bagw](https://github.com/xorvo/bagw)
+    service on `127.0.0.1`, which runs your own installed agent (e.g. the `claude`
+    CLI) — which then calls whatever backend it's configured to use (e.g. your AWS
+    Bedrock account). The text stays between your machine and your configured
+    backend; bagw stores no message content. bagw only serves extensions you have
+    explicitly approved.
   - **Anthropic** (`api.anthropic.com`) when using an Anthropic API key, or
   - **AWS Bedrock** (`bedrock-runtime.<region>.amazonaws.com`) when using static
     AWS keys.

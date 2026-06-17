@@ -2,18 +2,21 @@
 // credentials stay on this device. This is a deliberate privacy choice.
 
 export const DEFAULTS = {
-  provider: "anthropic", // "anthropic" | "bedrock" | "claudecode"
+  provider: "anthropic", // "anthropic" | "bedrock" | "bagw"
 
   // Direct Anthropic API
   anthropicApiKey: "",
   anthropicModel: "claude-sonnet-4-6",
 
-  // Local Claude Code bridge — reuses your local `claude` config (Bedrock,
-  // AWS profile, valet refresh, model). See bridge/wyt-bridge.mjs.
-  claudeCode: {
-    bridgeUrl: "http://127.0.0.1:8765",
-    token: "",
-    model: "", // optional override; empty = use Claude Code's configured model
+  // bagw — Browser Agent Gateway (https://github.com/xorvo/bagw). Reuses your
+  // locally-installed agent (e.g. Claude Code → Bedrock/profile/refresh). The
+  // token is obtained by pairing (Connect), not pasted. Install: brew install
+  // xorvo/tap/bagw  (then: brew services start bagw).
+  bagw: {
+    url: "http://127.0.0.1:8765",
+    token: "", // set automatically after you approve the pairing
+    agent: "claude", // which agent bagw should run
+    model: "", // optional model override; empty = the agent's configured model
   },
 
   // AWS Bedrock (Claude via Bedrock)
@@ -56,7 +59,7 @@ export async function getSettings() {
     ...DEFAULTS,
     ...stored,
     bedrock: { ...DEFAULTS.bedrock, ...(stored.bedrock || {}) },
-    claudeCode: { ...DEFAULTS.claudeCode, ...(stored.claudeCode || {}) },
+    bagw: { ...DEFAULTS.bagw, ...(stored.bagw || {}) },
     style: { ...DEFAULTS.style, ...(stored.style || {}) },
     context: { ...DEFAULTS.context, ...(stored.context || {}) },
   };
@@ -73,6 +76,6 @@ export async function isConfigured() {
     return Boolean(
       s.bedrock.accessKeyId && s.bedrock.secretAccessKey && s.bedrock.modelId
     );
-  if (s.provider === "claudecode") return Boolean(s.claudeCode.bridgeUrl);
+  if (s.provider === "bagw") return Boolean(s.bagw.url && s.bagw.token);
   return false;
 }

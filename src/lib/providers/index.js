@@ -3,15 +3,16 @@
 
 import { callAnthropic } from "./anthropic.js";
 import { callBedrock } from "./bedrock.js";
-import { callClaudeCode } from "./claudecode.js";
+import { callBagw } from "./bagw.js";
 
 export async function runProvider(settings, { system, user, maxTokens }) {
-  if (settings.provider === "claudecode") {
-    const cc = settings.claudeCode;
-    return callClaudeCode({
-      bridgeUrl: cc.bridgeUrl,
-      token: cc.token,
-      model: cc.model,
+  if (settings.provider === "bagw") {
+    const b = settings.bagw;
+    return callBagw({
+      url: b.url,
+      token: b.token,
+      agent: b.agent,
+      model: b.model,
       system,
       user,
     });

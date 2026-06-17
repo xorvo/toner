@@ -25,10 +25,10 @@ to improve.
 - **Tone check** — get a candid read on how a message may land before sending.
 - **Before/after** — every suggestion is editable; replace, copy, or try again.
 - **Popup scratchpad** — refine pasted text even on pages without a text box.
-- **Three backends** — **Claude Code (local)** (reuse your existing Claude Code
-  config via a tiny local bridge — great for SSO/profile-based Bedrock), your own
-  **Anthropic API key**, or **AWS Bedrock** with static keys (SigV4). Pluggable
-  provider layer.
+- **Three backends** — **bagw (local agent gateway)** (reuse your existing Claude
+  Code / agent config — great for SSO/profile-based Bedrock; install once via
+  Homebrew), your own **Anthropic API key**, or **AWS Bedrock** with static keys
+  (SigV4). Pluggable provider layer.
 
 ## Install (load unpacked)
 
@@ -45,21 +45,24 @@ This is an unpacked Chrome extension — no build step.
 
 Open **Settings** and choose a provider:
 
-### Option A — Claude Code (local) — recommended if you already use Claude Code
+### Option A — bagw (local agent gateway) — recommended if you already use Claude Code
 Reuse your existing Claude Code setup (Bedrock, AWS profile, credential refresh,
-model) without entering any keys. Requires running a small local bridge.
+model) without entering any keys, via [bagw](https://github.com/xorvo/bagw).
 
-1. Start the bridge: `node bridge/wyt-bridge.mjs` (see [bridge/README.md](bridge/README.md)).
-2. Copy the **token** it prints.
-3. In Settings → provider **Claude Code (local)**, set the bridge URL
-   (`http://127.0.0.1:8765`) and paste the token.
-4. Optionally set a model override (e.g. a faster model for quick rewrites);
-   leave blank to use your Claude Code model.
-5. Click **Test connection**.
+1. Install bagw once and start it:
+   ```bash
+   brew install xorvo/tap/bagw && brew services start bagw
+   # or: npm i -g bagw && bagw start
+   ```
+2. In Settings → provider **Local agent gateway (bagw)**, leave the URL at
+   `http://127.0.0.1:8765`, set the agent (`claude`) and an optional model override.
+3. Click **Connect** and **approve the request** (a dialog on the bagw machine, or
+   `bagw approve <code>`). The extension is now paired — no keys, no tokens to paste.
 
-Why a bridge? A browser extension can't launch a CLI, read `~/.aws`, run a
-credential-refresh command, or do SSO. The bridge runs your `claude` CLI on the
-extension's behalf, inheriting all of your local config. Nothing is stored.
+Why bagw? A browser extension can't launch a CLI, read `~/.aws`, run a
+credential-refresh command, or do SSO. bagw runs your `claude` CLI on the
+extension's behalf, inheriting all of your local config, and only after you
+approve this specific extension. Credentials never touch the browser.
 
 ### Option B — Anthropic API key
 1. Get a key from [console.anthropic.com](https://console.anthropic.com).
@@ -106,9 +109,10 @@ Editable field ──(user clicks ✎ / shortcut)──▶ content script (shado
   only place that holds credentials and talks to a provider.
 - The **provider layer** (`src/lib/providers/`) abstracts the backend. Anthropic
   and Bedrock speak the Messages API directly (Bedrock requests are SigV4-signed
-  by `src/lib/sigv4.js`, Web Crypto, no dependencies). The Claude Code provider
-  instead POSTs to the local bridge (`bridge/wyt-bridge.mjs`), which runs your
-  `claude` CLI and inherits all of its config.
+  by `src/lib/sigv4.js`, Web Crypto, no dependencies). The bagw provider POSTs to
+  the local [bagw](https://github.com/xorvo/bagw) gateway, which runs your installed
+  agent (e.g. Claude Code) using your existing config; the extension pairs with bagw
+  once (you approve it) and never holds credentials.
 - **Personas** (`src/lib/personas.js`) and **actions** (`src/lib/actions.js`) are
   plain data, easy to extend. Prompts are assembled in `src/lib/prompt.js`, which
   asks the model for a small JSON object and parses it leniently.
@@ -119,7 +123,6 @@ Editable field ──(user clicks ✎ / shortcut)──▶ content script (shado
 manifest.json
 icons/                     generated PNG icons
 tools/make-icons.mjs       regenerate icons (node tools/make-icons.mjs)
-bridge/                    local Claude Code bridge (wyt-bridge.mjs + README)
 src/
   background/service-worker.js   message router + AI calls
   content/content.js             inline UI (shadow DOM)
@@ -127,7 +130,9 @@ src/
   options/                       settings page
   lib/
     personas.js  actions.js  prompt.js  storage.js  sigv4.js
-    providers/   anthropic.js  bedrock.js  claudecode.js  index.js
+    providers/   anthropic.js  bedrock.js  bagw.js  index.js
+
+Local agent gateway lives in its own repo: https://github.com/xorvo/bagw
 ```
 
 ## Development
