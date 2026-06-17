@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="options.css" />
+    <title>Watch Your Tone — Settings</title>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="head">
+        <span class="logo">●</span>
+        <h1>Watch Your Tone</h1>
+      </header>
+      <p class="tagline">
+        A writing coach in your text box. Configure how it connects to Claude and
+        how it should write for you. Your keys stay on this device.
+      </p>
+
+      <section class="card">
+        <h2>AI provider</h2>
+        <div class="radio-row">
+          <label><input type="radio" name="provider" value="anthropic" /> Anthropic API key</label>
+          <label><input type="radio" name="provider" value="bedrock" /> AWS Bedrock</label>
+        </div>
+
+        <div id="anthropic-section" class="provider-section">
+          <label class="field">
+            <span class="label">Anthropic API key</span>
+            <input type="password" id="anthropicApiKey" placeholder="sk-ant-…" autocomplete="off" />
+            <span class="hint">Create a key at console.anthropic.com. Stored locally, never synced.</span>
+          </label>
+          <label class="field">
+            <span class="label">Model</span>
+            <select id="anthropicModel">
+              <option value="claude-sonnet-4-6">Claude Sonnet 4.6 — fast, great default</option>
+              <option value="claude-haiku-4-5">Claude Haiku 4.5 — fastest, cheapest</option>
+              <option value="claude-opus-4-8">Claude Opus 4.8 — most capable</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="bedrock-section" class="provider-section">
+          <label class="field">
+            <span class="label">AWS region</span>
+            <input type="text" id="bedrockRegion" placeholder="us-east-1" />
+          </label>
+          <label class="field">
+            <span class="label">Access key ID</span>
+            <input type="text" id="bedrockAccessKeyId" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span class="label">Secret access key</span>
+            <input type="password" id="bedrockSecretAccessKey" autocomplete="off" />
+          </label>
+          <label class="field">
+            <span class="label">Session token (optional)</span>
+            <input type="password" id="bedrockSessionToken" autocomplete="off" />
+            <span class="hint">Only needed for temporary credentials.</span>
+          </label>
+          <label class="field">
+            <span class="label">Model ID / inference profile</span>
+            <input type="text" id="bedrockModelId" placeholder="us.anthropic.claude-sonnet-4-5-20250929-v1:0" />
+            <span class="hint">Use the exact model ID or inference-profile ID from your AWS Bedrock console.</span>
+          </label>
+        </div>
+
+        <div class="row">
+          <button id="test" class="ghost">Test connection</button>
+          <span id="testStatus" class="test-status"></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Default persona</h2>
+        <p class="muted">Pick how rewrites should sound by default. You can change it per-message from the popup or inline panel.</p>
+        <select id="persona" class="full"></select>
+        <p id="personaDesc" class="muted small"></p>
+      </section>
+
+      <section class="card">
+        <h2>Your style profile</h2>
+        <p class="muted">Optional. Applied to every rewrite so the assistant keeps your voice.</p>
+        <label class="field">
+          <span class="label">Preferred tone (comma-separated)</span>
+          <input type="text" id="styleTone" placeholder="concise, kind, direct" />
+        </label>
+        <label class="field">
+          <span class="label">Avoid (comma-separated)</span>
+          <input type="text" id="styleAvoid" placeholder="corporate jargon, blame, long paragraphs" />
+        </label>
+        <label class="field">
+          <span class="label">Preferred format</span>
+          <input type="text" id="styleFormat" placeholder="short slack-style message" />
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" id="stylePreserveVoice" />
+          Preserve my wording and voice as much as possible
+        </label>
+        <label class="field">
+          <span class="label">Anything else</span>
+          <textarea id="styleCustom" placeholder="e.g. Use simple English. Prefer bullet points for lists."></textarea>
+        </label>
+      </section>
+
+      <section class="card">
+        <h2>Behavior &amp; privacy</h2>
+        <label class="checkbox">
+          <input type="checkbox" id="showInlineButton" />
+          Show the floating ✎ button on editable fields
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" id="autoDetectApp" />
+          Use the current site as context (e.g. Slack vs. Gmail)
+        </label>
+        <label class="field">
+          <span class="label">Disable on these sites (one hostname per line)</span>
+          <textarea id="disabledSites" placeholder="example.com&#10;internal.company.com"></textarea>
+        </label>
+      </section>
+
+      <div class="save-bar">
+        <button id="save" class="primary">Save settings</button>
+        <span id="saveStatus" class="save-status"></span>
+      </div>
+    </div>
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

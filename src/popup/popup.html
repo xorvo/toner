@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Watch Your Tone</title>
+  </head>
+  <body>
+    <header class="head">
+      <span class="logo">●</span>
+      <span class="brand">Watch Your Tone</span>
+      <button id="settings" class="icon-btn" title="Settings">⚙</button>
+    </header>
+
+    <div id="status" class="status"></div>
+
+    <label class="field">
+      <span class="label">Persona</span>
+      <select id="persona"></select>
+    </label>
+
+    <div class="scratch">
+      <div class="label">Quick refine</div>
+      <textarea id="input" placeholder="Paste or type a message to refine…"></textarea>
+      <div class="controls">
+        <select id="action"></select>
+        <button id="run" class="primary">Refine</button>
+      </div>
+      <div id="out" class="out"></div>
+    </div>
+
+    <footer class="foot">
+      <span>Refines only the text you give it. Nothing is sent automatically.</span>
+    </footer>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+
+# Node (only used for the icon generator)
+node_modules/
+
+# Build artifacts / packaged extension
+dist/
+*.zip
+
+# Agent workspace metadata
+.agent-workspace/
