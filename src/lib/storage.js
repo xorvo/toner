@@ -2,11 +2,19 @@
 // credentials stay on this device. This is a deliberate privacy choice.
 
 export const DEFAULTS = {
-  provider: "anthropic", // "anthropic" | "bedrock"
+  provider: "anthropic", // "anthropic" | "bedrock" | "claudecode"
 
   // Direct Anthropic API
   anthropicApiKey: "",
   anthropicModel: "claude-sonnet-4-6",
+
+  // Local Claude Code bridge — reuses your local `claude` config (Bedrock,
+  // AWS profile, valet refresh, model). See bridge/wyt-bridge.mjs.
+  claudeCode: {
+    bridgeUrl: "http://127.0.0.1:8765",
+    token: "",
+    model: "", // optional override; empty = use Claude Code's configured model
+  },
 
   // AWS Bedrock (Claude via Bedrock)
   bedrock: {
@@ -48,6 +56,7 @@ export async function getSettings() {
     ...DEFAULTS,
     ...stored,
     bedrock: { ...DEFAULTS.bedrock, ...(stored.bedrock || {}) },
+    claudeCode: { ...DEFAULTS.claudeCode, ...(stored.claudeCode || {}) },
     style: { ...DEFAULTS.style, ...(stored.style || {}) },
     context: { ...DEFAULTS.context, ...(stored.context || {}) },
   };
@@ -64,5 +73,6 @@ export async function isConfigured() {
     return Boolean(
       s.bedrock.accessKeyId && s.bedrock.secretAccessKey && s.bedrock.modelId
     );
+  if (s.provider === "claudecode") return Boolean(s.claudeCode.bridgeUrl);
   return false;
 }

@@ -11,6 +11,7 @@ function splitList(value) {
 }
 
 function setProviderVisibility(provider) {
+  $("claudecode-section").classList.toggle("active", provider === "claudecode");
   $("anthropic-section").classList.toggle("active", provider === "anthropic");
   $("bedrock-section").classList.toggle("active", provider === "bedrock");
 }
@@ -28,6 +29,10 @@ async function load() {
     r.addEventListener("change", () => setProviderVisibility(selectedProvider()));
   });
   setProviderVisibility(s.provider);
+
+  $("ccBridgeUrl").value = s.claudeCode.bridgeUrl || "http://127.0.0.1:8765";
+  $("ccToken").value = s.claudeCode.token || "";
+  $("ccModel").value = s.claudeCode.model || "";
 
   $("anthropicApiKey").value = s.anthropicApiKey || "";
   $("anthropicModel").value = s.anthropicModel || "claude-sonnet-4-6";
@@ -68,6 +73,11 @@ async function load() {
 function collect() {
   return {
     provider: selectedProvider(),
+    claudeCode: {
+      bridgeUrl: $("ccBridgeUrl").value.trim() || "http://127.0.0.1:8765",
+      token: $("ccToken").value.trim(),
+      model: $("ccModel").value.trim(),
+    },
     anthropicApiKey: $("anthropicApiKey").value.trim(),
     anthropicModel: $("anthropicModel").value,
     bedrock: {

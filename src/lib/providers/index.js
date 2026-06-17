@@ -3,8 +3,20 @@
 
 import { callAnthropic } from "./anthropic.js";
 import { callBedrock } from "./bedrock.js";
+import { callClaudeCode } from "./claudecode.js";
 
 export async function runProvider(settings, { system, user, maxTokens }) {
+  if (settings.provider === "claudecode") {
+    const cc = settings.claudeCode;
+    return callClaudeCode({
+      bridgeUrl: cc.bridgeUrl,
+      token: cc.token,
+      model: cc.model,
+      system,
+      user,
+    });
+  }
+
   if (settings.provider === "bedrock") {
     const b = settings.bedrock;
     return callBedrock({

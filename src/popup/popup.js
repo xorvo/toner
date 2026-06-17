@@ -29,7 +29,12 @@ async function init() {
   // Status
   const status = $("#status");
   if (configured) {
-    const provider = settings.provider === "bedrock" ? "AWS Bedrock" : "Anthropic API";
+    const provider =
+      settings.provider === "bedrock"
+        ? "AWS Bedrock"
+        : settings.provider === "claudecode"
+        ? "Claude Code (local)"
+        : "Anthropic API";
     status.className = "status ok";
     status.textContent = `Ready · using ${provider}`;
   } else {

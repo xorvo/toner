@@ -25,8 +25,10 @@ to improve.
 - **Tone check** — get a candid read on how a message may land before sending.
 - **Before/after** — every suggestion is editable; replace, copy, or try again.
 - **Popup scratchpad** — refine pasted text even on pages without a text box.
-- **Two backends** — your own **Anthropic API key**, or **AWS Bedrock** (Claude
-  via SigV4). Pluggable provider layer.
+- **Three backends** — **Claude Code (local)** (reuse your existing Claude Code
+  config via a tiny local bridge — great for SSO/profile-based Bedrock), your own
+  **Anthropic API key**, or **AWS Bedrock** with static keys (SigV4). Pluggable
+  provider layer.
 
 ## Install (load unpacked)
 
@@ -43,14 +45,33 @@ This is an unpacked Chrome extension — no build step.
 
 Open **Settings** and choose a provider:
 
-### Option A — Anthropic API key
+### Option A — Claude Code (local) — recommended if you already use Claude Code
+Reuse your existing Claude Code setup (Bedrock, AWS profile, credential refresh,
+model) without entering any keys. Requires running a small local bridge.
+
+1. Start the bridge: `node bridge/wyt-bridge.mjs` (see [bridge/README.md](bridge/README.md)).
+2. Copy the **token** it prints.
+3. In Settings → provider **Claude Code (local)**, set the bridge URL
+   (`http://127.0.0.1:8765`) and paste the token.
+4. Optionally set a model override (e.g. a faster model for quick rewrites);
+   leave blank to use your Claude Code model.
+5. Click **Test connection**.
+
+Why a bridge? A browser extension can't launch a CLI, read `~/.aws`, run a
+credential-refresh command, or do SSO. The bridge runs your `claude` CLI on the
+extension's behalf, inheriting all of your local config. Nothing is stored.
+
+### Option B — Anthropic API key
 1. Get a key from [console.anthropic.com](https://console.anthropic.com).
 2. Paste it into **Anthropic API key**.
 3. Pick a model (Sonnet 4.6 is a fast, capable default; Haiku 4.5 is cheapest;
    Opus 4.8 is the most capable).
 4. Click **Test connection**.
 
-### Option B — AWS Bedrock
+### Option C — AWS Bedrock (static keys)
+Use this only if you have long-lived IAM access keys. For SSO/profile-based
+Bedrock (no static keys), use **Option A** instead.
+
 1. Enter your **region**, **access key ID**, **secret access key**, and
    (if using temporary credentials) a **session token**.
 2. Enter the Bedrock **model ID** or inference-profile ID for a Claude model,
@@ -83,9 +104,11 @@ Editable field ──(user clicks ✎ / shortcut)──▶ content script (shado
   Replace. It never calls the AI directly.
 - The **background service worker** (`src/background/service-worker.js`) is the
   only place that holds credentials and talks to a provider.
-- The **provider layer** (`src/lib/providers/`) abstracts the backend. Both
-  backends speak the Anthropic Messages API; Bedrock requests are SigV4-signed by
-  `src/lib/sigv4.js` (Web Crypto, no dependencies).
+- The **provider layer** (`src/lib/providers/`) abstracts the backend. Anthropic
+  and Bedrock speak the Messages API directly (Bedrock requests are SigV4-signed
+  by `src/lib/sigv4.js`, Web Crypto, no dependencies). The Claude Code provider
+  instead POSTs to the local bridge (`bridge/wyt-bridge.mjs`), which runs your
+  `claude` CLI and inherits all of its config.
 - **Personas** (`src/lib/personas.js`) and **actions** (`src/lib/actions.js`) are
   plain data, easy to extend. Prompts are assembled in `src/lib/prompt.js`, which
   asks the model for a small JSON object and parses it leniently.
@@ -96,6 +119,7 @@ Editable field ──(user clicks ✎ / shortcut)──▶ content script (shado
 manifest.json
 icons/                     generated PNG icons
 tools/make-icons.mjs       regenerate icons (node tools/make-icons.mjs)
+bridge/                    local Claude Code bridge (wyt-bridge.mjs + README)
 src/
   background/service-worker.js   message router + AI calls
   content/content.js             inline UI (shadow DOM)
@@ -103,7 +127,7 @@ src/
   options/                       settings page
   lib/
     personas.js  actions.js  prompt.js  storage.js  sigv4.js
-    providers/   anthropic.js  bedrock.js  index.js
+    providers/   anthropic.js  bedrock.js  claudecode.js  index.js
 ```
 
 ## Development

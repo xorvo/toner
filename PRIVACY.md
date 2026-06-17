@@ -27,8 +27,13 @@ Watch Your Tone is built so that privacy is a feature, not an afterthought.
 ## Who receives your data
 
 - Your text is sent directly from your browser to the AI provider you chose:
+  - **Claude Code (local)**: to a local bridge on `127.0.0.1` that runs your own
+    `claude` CLI, which then calls whatever backend your Claude Code is configured
+    to use (e.g. your AWS Bedrock account). The text stays between your machine and
+    your configured backend; the bridge stores nothing.
   - **Anthropic** (`api.anthropic.com`) when using an Anthropic API key, or
-  - **AWS Bedrock** (`bedrock-runtime.<region>.amazonaws.com`) when using AWS.
+  - **AWS Bedrock** (`bedrock-runtime.<region>.amazonaws.com`) when using static
+    AWS keys.
 - Those providers handle your data under their own terms and policies. Watch Your
   Tone is not an intermediary server — there is no third party in between.
 

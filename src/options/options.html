@@ -20,8 +20,32 @@
       <section class="card">
         <h2>AI provider</h2>
         <div class="radio-row">
+          <label><input type="radio" name="provider" value="claudecode" /> Claude Code (local)</label>
           <label><input type="radio" name="provider" value="anthropic" /> Anthropic API key</label>
           <label><input type="radio" name="provider" value="bedrock" /> AWS Bedrock</label>
+        </div>
+
+        <div id="claudecode-section" class="provider-section">
+          <p class="muted small">
+            Uses your locally-installed Claude Code — inheriting whatever config you
+            already have (Bedrock, AWS profile, <code>valet aws</code> refresh, model).
+            Requires the local bridge to be running:
+            <code>node bridge/wyt-bridge.mjs</code> (see <code>bridge/README.md</code>).
+          </p>
+          <label class="field">
+            <span class="label">Bridge URL</span>
+            <input type="text" id="ccBridgeUrl" placeholder="http://127.0.0.1:8765" />
+          </label>
+          <label class="field">
+            <span class="label">Bridge token</span>
+            <input type="password" id="ccToken" autocomplete="off" placeholder="printed when you start the bridge" />
+            <span class="hint">Copy the token the bridge prints on startup.</span>
+          </label>
+          <label class="field">
+            <span class="label">Model override (optional)</span>
+            <input type="text" id="ccModel" placeholder="leave blank to use Claude Code's model" />
+            <span class="hint">e.g. a faster/cheaper model for quick rewrites. Blank = your Claude Code default.</span>
+          </label>
         </div>
 
         <div id="anthropic-section" class="provider-section">
