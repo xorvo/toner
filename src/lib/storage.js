@@ -11,7 +11,7 @@ export const DEFAULTS = {
   // OpenAI (or any OpenAI-compatible chat/completions endpoint)
   openai: {
     apiKey: "",
-    model: "gpt-4o",
+    model: "gpt-5.5",
     baseUrl: "https://api.openai.com/v1",
   },
 

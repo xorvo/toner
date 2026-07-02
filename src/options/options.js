@@ -46,7 +46,7 @@ async function load() {
   $("anthropicModel").value = s.anthropicModel || "claude-sonnet-4-6";
 
   $("openaiApiKey").value = s.openai.apiKey || "";
-  $("openaiModel").value = s.openai.model || "gpt-4o";
+  $("openaiModel").value = s.openai.model || "gpt-5.5";
   $("openaiBaseUrl").value = s.openai.baseUrl || "https://api.openai.com/v1";
 
   $("bedrockRegion").value = s.bedrock.region || "";
@@ -95,7 +95,7 @@ function collect() {
     anthropicModel: $("anthropicModel").value,
     openai: {
       apiKey: $("openaiApiKey").value.trim(),
-      model: $("openaiModel").value.trim() || "gpt-4o",
+      model: $("openaiModel").value.trim() || "gpt-5.5",
       baseUrl: $("openaiBaseUrl").value.trim() || "https://api.openai.com/v1",
     },
     bedrock: {

@@ -75,7 +75,7 @@ approve this specific extension. Credentials never touch the browser.
 ### Option C — OpenAI API key
 1. Get a key from [platform.openai.com](https://platform.openai.com).
 2. In Settings → provider **OpenAI API key**, paste it and set a model
-   (e.g. `gpt-4o`).
+   (default `gpt-5.5`).
 3. (Advanced) Change the base URL to use an OpenAI-compatible endpoint. Custom
    hosts may need their own extension host permission.
 4. Click **Test connection**.
