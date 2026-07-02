@@ -33,7 +33,9 @@ Watch Your Tone is built so that privacy is a feature, not an afterthought.
     Bedrock account). The text stays between your machine and your configured
     backend; bagw stores no message content. bagw only serves extensions you have
     explicitly approved.
-  - **Anthropic** (`api.anthropic.com`) when using an Anthropic API key, or
+  - **Anthropic** (`api.anthropic.com`) when using an Anthropic API key,
+  - **OpenAI** (`api.openai.com`, or a base URL you configure) when using an
+    OpenAI API key, or
   - **AWS Bedrock** (`bedrock-runtime.<region>.amazonaws.com`) when using static
     AWS keys.
 - Those providers handle your data under their own terms and policies. Watch Your

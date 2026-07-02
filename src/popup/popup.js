@@ -34,6 +34,8 @@ async function init() {
         ? "AWS Bedrock"
         : settings.provider === "bagw"
         ? "Local agent gateway (bagw)"
+        : settings.provider === "openai"
+        ? "OpenAI API"
         : "Anthropic API";
     status.className = "status ok";
     status.textContent = `Ready · using ${provider}`;

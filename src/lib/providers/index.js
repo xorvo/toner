@@ -2,10 +2,23 @@
 // Adding a new backend = add a case here and a file alongside.
 
 import { callAnthropic } from "./anthropic.js";
+import { callOpenAI } from "./openai.js";
 import { callBedrock } from "./bedrock.js";
 import { callBagw } from "./bagw.js";
 
 export async function runProvider(settings, { system, user, maxTokens }) {
+  if (settings.provider === "openai") {
+    const o = settings.openai;
+    return callOpenAI({
+      apiKey: o.apiKey,
+      baseUrl: o.baseUrl,
+      model: o.model,
+      system,
+      user,
+      maxTokens,
+    });
+  }
+
   if (settings.provider === "bagw") {
     const b = settings.bagw;
     return callBagw({

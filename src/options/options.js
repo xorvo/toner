@@ -15,6 +15,7 @@ let pairedToken = ""; // bagw per-client token, set on load / after pairing
 function setProviderVisibility(provider) {
   $("bagw-section").classList.toggle("active", provider === "bagw");
   $("anthropic-section").classList.toggle("active", provider === "anthropic");
+  $("openai-section").classList.toggle("active", provider === "openai");
   $("bedrock-section").classList.toggle("active", provider === "bedrock");
 }
 
@@ -43,6 +44,10 @@ async function load() {
 
   $("anthropicApiKey").value = s.anthropicApiKey || "";
   $("anthropicModel").value = s.anthropicModel || "claude-sonnet-4-6";
+
+  $("openaiApiKey").value = s.openai.apiKey || "";
+  $("openaiModel").value = s.openai.model || "gpt-4o";
+  $("openaiBaseUrl").value = s.openai.baseUrl || "https://api.openai.com/v1";
 
   $("bedrockRegion").value = s.bedrock.region || "";
   $("bedrockAccessKeyId").value = s.bedrock.accessKeyId || "";
@@ -88,6 +93,11 @@ function collect() {
     },
     anthropicApiKey: $("anthropicApiKey").value.trim(),
     anthropicModel: $("anthropicModel").value,
+    openai: {
+      apiKey: $("openaiApiKey").value.trim(),
+      model: $("openaiModel").value.trim() || "gpt-4o",
+      baseUrl: $("openaiBaseUrl").value.trim() || "https://api.openai.com/v1",
+    },
     bedrock: {
       region: $("bedrockRegion").value.trim() || "us-east-1",
       accessKeyId: $("bedrockAccessKeyId").value.trim(),

@@ -25,10 +25,11 @@ to improve.
 - **Tone check** — get a candid read on how a message may land before sending.
 - **Before/after** — every suggestion is editable; replace, copy, or try again.
 - **Popup scratchpad** — refine pasted text even on pages without a text box.
-- **Three backends** — **bagw (local agent gateway)** (reuse your existing Claude
+- **Four backends** — **bagw (local agent gateway)** (reuse your existing Claude
   Code / agent config — great for SSO/profile-based Bedrock; install once via
-  Homebrew), your own **Anthropic API key**, or **AWS Bedrock** with static keys
-  (SigV4). Pluggable provider layer.
+  Homebrew), your own **Anthropic API key**, your own **OpenAI API key** (or any
+  OpenAI-compatible endpoint), or **AWS Bedrock** with static keys (SigV4).
+  Pluggable provider layer.
 
 ## Install (load unpacked)
 
@@ -71,7 +72,15 @@ approve this specific extension. Credentials never touch the browser.
    Opus 4.8 is the most capable).
 4. Click **Test connection**.
 
-### Option C — AWS Bedrock (static keys)
+### Option C — OpenAI API key
+1. Get a key from [platform.openai.com](https://platform.openai.com).
+2. In Settings → provider **OpenAI API key**, paste it and set a model
+   (e.g. `gpt-4o`).
+3. (Advanced) Change the base URL to use an OpenAI-compatible endpoint. Custom
+   hosts may need their own extension host permission.
+4. Click **Test connection**.
+
+### Option D — AWS Bedrock (static keys)
 Use this only if you have long-lived IAM access keys. For SSO/profile-based
 Bedrock (no static keys), use **Option A** instead.
 

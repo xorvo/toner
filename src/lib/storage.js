@@ -2,11 +2,18 @@
 // credentials stay on this device. This is a deliberate privacy choice.
 
 export const DEFAULTS = {
-  provider: "anthropic", // "anthropic" | "bedrock" | "bagw"
+  provider: "anthropic", // "anthropic" | "openai" | "bedrock" | "bagw"
 
   // Direct Anthropic API
   anthropicApiKey: "",
   anthropicModel: "claude-sonnet-4-6",
+
+  // OpenAI (or any OpenAI-compatible chat/completions endpoint)
+  openai: {
+    apiKey: "",
+    model: "gpt-4o",
+    baseUrl: "https://api.openai.com/v1",
+  },
 
   // bagw — Browser Agent Gateway (https://github.com/xorvo/bagw). Reuses your
   // locally-installed agent (e.g. Claude Code → Bedrock/profile/refresh). The
@@ -58,6 +65,7 @@ export async function getSettings() {
   return {
     ...DEFAULTS,
     ...stored,
+    openai: { ...DEFAULTS.openai, ...(stored.openai || {}) },
     bedrock: { ...DEFAULTS.bedrock, ...(stored.bedrock || {}) },
     bagw: { ...DEFAULTS.bagw, ...(stored.bagw || {}) },
     style: { ...DEFAULTS.style, ...(stored.style || {}) },
@@ -72,6 +80,7 @@ export async function saveSettings(patch) {
 export async function isConfigured() {
   const s = await getSettings();
   if (s.provider === "anthropic") return Boolean(s.anthropicApiKey);
+  if (s.provider === "openai") return Boolean(s.openai.apiKey);
   if (s.provider === "bedrock")
     return Boolean(
       s.bedrock.accessKeyId && s.bedrock.secretAccessKey && s.bedrock.modelId
